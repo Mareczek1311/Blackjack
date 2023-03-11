@@ -9,6 +9,17 @@
 
 }
 
+
+.playerCardsList{
+  list-style: none;
+  
+}
+.playerCardsList li{
+  margin: 2%;
+  display: inline;
+
+}
+
 .mainContainer{
 
 }
