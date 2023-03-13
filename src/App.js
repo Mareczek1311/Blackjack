@@ -11,24 +11,50 @@ function App() {
     function timeout(delay) {
       return new Promise( res => setTimeout(res, delay) );
   }
+
+
     const [playersVal, setPlayersVal] = useState([[],[]]);
     const [playersUI, setPlayersUI] = useState(["inGame", "inGame"]);
     const [isDealerRound, setIsDealerRound] = useState(false);
 
-    const cards = [
-      4,4,4,4,4,4,4,4,7,4
-    ]
- 
+    const [cards, setCards]= useState([4,4,4,4,4,4,4,4,7,4])
+    const setOfCards = [4,4,4,4,4,4,4,4,7,4]
+    function restart(){
+      setIsDealerRound(false)
+
+      setCards(setOfCards)
+      const playersUIRestart = playersVal.map((item, i) => {
+        return "inGame";
+      
+    });
+      setPlayersUI(playersUIRestart)
+
+
+      const playersValRestart = playersVal.map((item, i) => {
+        return [];
+      
+    });
+      setPlayersVal(playersValRestart)
+
+      setStarted(true)
+    }
+
        
     function getRandomCard(){
       let card = Math.floor(Math.random() * 10);
       while(cards[card] === 0)
       {
         card = Math.floor(Math.random() * 10);
-      }  
+      }
       
-      cards[card]-=1;
-    
+      
+      const newArray = cards.map((item, i) => {
+        return item;
+      
+    });
+      newArray[card]-=1;
+      
+      setCards(newArray)
       card += 2; 
       return card
     }
@@ -200,6 +226,10 @@ function App() {
                     
                     <p>Lose</p> </>: <p>Win</p>
                    }
+
+                   <Button onClick={ () => restart() } className='playbtn' as="a" variant="primary">
+                          Restart
+                    </Button>
 
             </>
         }
