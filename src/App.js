@@ -1,7 +1,7 @@
 import './App.css';
 import Button from 'react-bootstrap/Button';
 import { useState } from 'react';
-
+import PlayerUI from './playerUI';
 
 
 
@@ -12,13 +12,16 @@ function App() {
       return new Promise( res => setTimeout(res, delay) );
   }
 
+    const [playersBalance, setPlayerBalance] = useState(1000)
 
-    const [playersVal, setPlayersVal] = useState([[],[]]);
-    const [playersUI, setPlayersUI] = useState(["inGame", "inGame"]);
+    const [playersVal, setPlayersVal] = useState([[],[],[],[]]);
+    const [playersUI, setPlayersUI] = useState(["inGame", "inGame", "inGame", "inGame"]);
     const [isDealerRound, setIsDealerRound] = useState(false);
 
     const [cards, setCards]= useState([4,4,4,4,4,4,4,4,7,4])
     const setOfCards = [4,4,4,4,4,4,4,4,7,4]
+   
+    
     function restart(){
       setIsDealerRound(false)
 
@@ -58,6 +61,8 @@ function App() {
       card += 2; 
       return card
     }
+
+
   function takeCard(index){
     var card = getRandomCard()
     
@@ -68,7 +73,6 @@ function App() {
 
     newArray[index].push(card)
     setPlayersVal(newArray)
-    console.log(playersVal[index])
   }
   
   function dealCard(){
@@ -86,11 +90,11 @@ function App() {
   
   }
   
-  function hit(){
+  function hit(playerIndex){
     // its one rn becouse im playing solo
-    takeCard(1)
+    takeCard(playerIndex)
 
-    let playerSum = sum(playersVal[1])
+    let playerSum = sum(playersVal[playerIndex])
     let plUI = playersUI
 
     if(playerSum > 21){
@@ -108,7 +112,7 @@ function App() {
     return res
   }
 
-  function stand(){
+  function stand(playerIndex){
     //Sould next player play but right now im gonna hard code that. I will make
     //sure that game is playable 1v1 rn
     setIsDealerRound(true)
@@ -124,7 +128,7 @@ function App() {
     dealerSum = sum(playersVal[0])
     let plUI = playersUI
   
-    let playerSum = sum(playersVal[1])
+    let playerSum = sum(playersVal[playerIndex])
     if(dealerSum > 21){
       plUI[1] = "Win"
     }
@@ -135,7 +139,7 @@ function App() {
       // Reset ??????
     }
     else{
-      plUI[1] = "lose"
+      plUI[playerIndex] = "lose"
     }
     setPlayersUI(plUI)
   }
@@ -158,15 +162,15 @@ function App() {
     setPlayersUI(plUI)
   }
 
-  function turn(state){
+  function turn(state, playerIndex){
     if(state == "hit"){
-      hit()
-      move(1)
+      hit(playerIndex)
+      move(playerIndex)
 
     }
 
     if(state == "stand"){
-      stand()
+      stand(playerIndex)
     } 
 
   }
@@ -203,34 +207,33 @@ function App() {
                 }
               })}
               </ul>
-              
-                <h1>You:</h1>
-                      <ul className="playerCardsList">
-                        {playersVal[1].map((el, inx) => <li key={inx}>{el}</li>)}
-                      </ul>
-                  {playersUI[1] == "inGame" ? <>
 
 
-                      <div className='playButtons'>
-                        <Button onClick={ () => turn("stand") } className='playbtn' as="a" variant="primary">
-                          Stand
-                        </Button>
-                        <Button onClick={ () => turn("hit") } className='playbtn' as="a" variant="primary">
-                          Hit
-                        </Button>
-                     </div>
+              <div className="playerUIContainer">
+                <PlayerUI 
+                playersVal={playersVal} 
+                playersUI={playersUI} 
+                turn={turn} 
+                restart={restart} 
+                playerIndex={1}
+                />
+                <PlayerUI 
+                playersVal={playersVal} 
+                playersUI={playersUI} 
+                turn={turn} 
+                restart={restart} 
+                playerIndex={2}
 
-                    </> 
-                    :
-                    playersUI[1] == "lose" ?<> 
-                    
-                    <p>Lose</p> </>: <p>Win</p>
-                   }
+                />
+                <PlayerUI 
+                playersVal={playersVal} 
+                playersUI={playersUI} 
+                turn={turn} 
+                restart={restart} 
+                playerIndex={3}
 
-                   <Button onClick={ () => restart() } className='playbtn' as="a" variant="primary">
-                          Restart
-                    </Button>
-
+                />
+              </div>
             </>
         }
         </header>
