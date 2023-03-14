@@ -3,6 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { useState } from 'react';
 import PlayerUI from './playerUI';
 
+//i need to change that when i win round by move(hit) i need to turn the new function that i need to write to make a dealer round
 
 
 
@@ -12,6 +13,9 @@ function App() {
       return new Promise( res => setTimeout(res, delay) );
   }
 
+    //1 becouse 0 is dealer
+    const [currPlayer, setCurrPlayer] = useState(1);
+
     const [playersBalance, setPlayerBalance] = useState(1000)
 
     const [playersVal, setPlayersVal] = useState([[],[],[],[]]);
@@ -20,7 +24,6 @@ function App() {
 
     const [cards, setCards]= useState([4,4,4,4,4,4,4,4,7,4])
     const setOfCards = [4,4,4,4,4,4,4,4,7,4]
-   
     
     function restart(){
       setIsDealerRound(false)
@@ -91,15 +94,10 @@ function App() {
   }
   
   function hit(playerIndex){
-    // its one rn becouse im playing solo
     takeCard(playerIndex)
 
     let playerSum = sum(playersVal[playerIndex])
     let plUI = playersUI
-
-    if(playerSum > 21){
-      plUI[1] = "lose"  
-    }
 
     setPlayersUI(plUI)
   }
@@ -113,35 +111,51 @@ function App() {
   }
 
   function stand(playerIndex){
-    //Sould next player play but right now im gonna hard code that. I will make
-    //sure that game is playable 1v1 rn
-    setIsDealerRound(true)
-    //check if its the last player
-
-    // i assume that im the last player so its dealer round rn
-
-    let dealerSum = sum(playersVal[0])
-
-    if(dealerSum <= 16){
-      takeCard(0)
-    }
-    dealerSum = sum(playersVal[0])
-    let plUI = playersUI
-  
+    setCurrPlayer(currPlayer+1)
+    
+    //im now hard code and assume that there are always 4 players so i continue only if everyone stand or win
     let playerSum = sum(playersVal[playerIndex])
-    if(dealerSum > 21){
-      plUI[1] = "Win"
-    }
-    else if(playerSum > dealerSum){
-      plUI[1] = "Win"
-    }
-    else if(playerSum == dealerSum){
-      // Reset ??????
-    }
-    else{
-      plUI[playerIndex] = "lose"
+    let dealerSum = sum(playersVal[0])
+    let plUI = playersUI
+    console.log(currPlayer)
+
+    if(currPlayer >= 3)
+    {
+
+      setIsDealerRound(true)
+
+
+      if(dealerSum <= 16){
+        takeCard(0)
+      }
+      dealerSum = sum(playersVal[0])
+      for(let i=1; i<playersUI.length; i++)
+      {
+        if(plUI[i]== "Win"){
+          continue;
+        }
+
+        if(dealerSum > 21){
+          plUI[i] = "Win"
+        }
+        else if(playerSum > dealerSum){
+          plUI[i] = "Win"
+        }
+        else if(playerSum == dealerSum){
+          // Reset ??????
+        }
+        else{
+          plUI[i] = "lose"
+        }
+      }
+    }else{
+      if(playerSum == 21){
+        plUI[playerIndex] = "Win"
+      }
+
     }
     setPlayersUI(plUI)
+
   }
 
   function move(index){
@@ -150,10 +164,11 @@ function App() {
 
     if(cardSum == 21){
       plUI[index] = "Win"
+      setCurrPlayer(currPlayer+1)
     }
     else if(cardSum > 21){
       plUI[index] = "lose"
-
+      setCurrPlayer(currPlayer+1)
     }
     else{
       plUI[index] = "inGame"
@@ -216,6 +231,7 @@ function App() {
                 turn={turn} 
                 restart={restart} 
                 playerIndex={1}
+                currPlayer={currPlayer}
                 />
                 <PlayerUI 
                 playersVal={playersVal} 
@@ -223,7 +239,7 @@ function App() {
                 turn={turn} 
                 restart={restart} 
                 playerIndex={2}
-
+                currPlayer={currPlayer}
                 />
                 <PlayerUI 
                 playersVal={playersVal} 
@@ -231,9 +247,12 @@ function App() {
                 turn={turn} 
                 restart={restart} 
                 playerIndex={3}
-
+                currPlayer={currPlayer}
                 />
               </div>
+              <Button onClick={ () => restart() } className='playbtn' as="a" variant="primary">
+                Restart
+              </Button>
             </>
         }
         </header>
