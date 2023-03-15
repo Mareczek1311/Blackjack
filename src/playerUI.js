@@ -19,12 +19,14 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer }) => {
                         <div className='playButtons'>
                           { currPlayer == playerIndex ?
                             <>
-                              <Button onClick={ () => turn("stand", playerIndex) } className='playbtn' as="a" variant="primary">
-                                Stand
-                              </Button>
-                              <Button onClick={ () => turn("hit", playerIndex) } className='playbtn' as="a" variant="primary">
-                                Hit
-                              </Button>
+                            <div className="container">
+                              <div onClick={ () => turn("stand", playerIndex) } className='pixel' as="a" variant="primary">
+                                <p>Stand</p>
+                              </div>
+                              <div onClick={ () => turn("hit", playerIndex) } className='pixel' as="a" variant="primary">
+                                <p>Hit</p>
+                              </div>
+                            </div>
                             </>
                             :
                             <></>

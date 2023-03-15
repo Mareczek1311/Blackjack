@@ -226,7 +226,10 @@ function App() {
                 }
                 else if(inx == 1 && isDealerRound == false){
                   return( 
-                    <li key={inx}>?</li>)
+                    <li key={inx}>
+                      <img key={inx} src={require(`./image/cards/question.png`) } width="32px" height="32px" alt={inx}></img>
+
+                    </li>)
                     
                 }
                 else{
@@ -262,9 +265,9 @@ function App() {
                 currPlayer={currPlayer}
                 />
               </div>
-              <Button onClick={ () => restart() } className='playbtn' as="a" variant="primary">
-                Restart
-              </Button>
+              <div onClick={ () => restart() } className='pixel' as="a" variant="primary">
+                <p>Restart</p>
+              </div>
             </>
         }
         </header>
