@@ -1,16 +1,21 @@
 import './App.css';
 import Button from 'react-bootstrap/Button';
 
-const PlayerUI = ({ playersVal, playersUI, turn, restart, playerIndex, currPlayer }) => {
+const cardsDir = ["/kier2.png","/kier3.png","/kier4.png","/kier5.png","/kier6.png","/kier7.png","/kier8.png","/kier9.png","/kier10.png"
+,"/kierAS.png","/kierK.png","/kierQ.png","/kier2.png"]
+
+const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer }) => {
     return (
         <div className="playerUI">
-                  <h1>You:</h1>
+                  <h1>Player {playerIndex}:</h1>
                         <ul className="playerCardsList">
-                          {playersVal[playerIndex].map((el, inx) => <li key={inx}>{el}</li>)}
+                          {playersVal[playerIndex].map((el, inx) => <li key={inx}>
+                            
+                            <img key={inx} src={require(`./image/cards/kier${cardsDir[el-2]}`) } width="32px" height="32px" alt={inx}></img>
+
+                          </li>)}
                         </ul>
                     {playersUI[playerIndex] == "inGame" ? <>
-
-
                         <div className='playButtons'>
                           { currPlayer == playerIndex ?
                             <>

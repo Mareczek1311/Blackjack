@@ -7,6 +7,18 @@
   -moz-user-select:none;
   user-select:none;
 
+
+  font-family: 'Nunito', sans-serif;
+font-family: 'Titillium Web', sans-serif;
+font-family: 'VT323', monospace;
+}
+
+img {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  width: 100px;
+  height: 100px;
 }
 
 .playerUIContainer{
@@ -21,7 +33,7 @@
   margin: 3%;
   width: 40vh;
   height: 30vh;
-  background-color: red;
+  background-color: rgb(62, 62, 62);
   border-radius: 5px;
   border-width: 6px;
   border-color: white;

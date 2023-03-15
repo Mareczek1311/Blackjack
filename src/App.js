@@ -13,6 +13,9 @@ function App() {
       return new Promise( res => setTimeout(res, delay) );
   }
 
+  const cardsDir = ["/kier2.png","/kier3.png","/kier4.png","/kier5.png","/kier6.png","/kier7.png","/kier8.png","/kier9.png","/kier10.png"
+,"/kierAS.png","/kierK.png","/kierQ.png","/kier2.png"]
+
     //1 becouse 0 is dealer
     const [currPlayer, setCurrPlayer] = useState(1);
 
@@ -24,7 +27,10 @@ function App() {
 
     const [cards, setCards]= useState([4,4,4,4,4,4,4,4,7,4])
     const setOfCards = [4,4,4,4,4,4,4,4,7,4]
+    const [started, setStarted] = useState(true)
+
     
+
     function restart(){
       setIsDealerRound(false)
 
@@ -84,7 +90,6 @@ function App() {
     }
 
   }
-  const [started, setStarted] = useState(true)
 
   function start(){
     dealCard()
@@ -110,50 +115,49 @@ function App() {
     return res
   }
 
-  function stand(playerIndex){
-    setCurrPlayer(currPlayer+1)
-    
-    //im now hard code and assume that there are always 4 players so i continue only if everyone stand or win
-    let playerSum = sum(playersVal[playerIndex])
-    let dealerSum = sum(playersVal[0])
+  function dealerRound(){
     let plUI = playersUI
-    console.log(currPlayer)
-
-    if(currPlayer >= 3)
-    {
-
-      setIsDealerRound(true)
-
-
+    let dealerSum = sum(playersVal[0])
+    
+    setIsDealerRound(true)
       if(dealerSum <= 16){
         takeCard(0)
       }
       dealerSum = sum(playersVal[0])
+
       for(let i=1; i<playersUI.length; i++)
       {
+        let playerSum =  sum(playersVal[i])
         if(plUI[i]== "Win"){
           continue;
         }
 
-        if(dealerSum > 21){
+        if(dealerSum > 21 && playersUI[i] == "inGame"){
           plUI[i] = "Win"
         }
-        else if(playerSum > dealerSum){
+        else if(playerSum > dealerSum && playerSum <= 21){
           plUI[i] = "Win"
         }
         else if(playerSum == dealerSum){
-          // Reset ??????
+          plUI[i] = "lose"
         }
         else{
           plUI[i] = "lose"
         }
       }
-    }else{
-      if(playerSum == 21){
-        plUI[playerIndex] = "Win"
-      }
+  }
 
+  function stand(playerIndex){
+    setCurrPlayer(currPlayer+1)
+    
+    //im now hard code and assume that there are always 4 players so i continue only if everyone stand or win
+    let playerSum = sum(playersVal[playerIndex])
+    let plUI = playersUI
+
+    if(playerSum == 21){
+      plUI[playerIndex] = "Win"
     }
+
     setPlayersUI(plUI)
 
   }
@@ -174,7 +178,9 @@ function App() {
       plUI[index] = "inGame"
       
     }
+
     setPlayersUI(plUI)
+ 
   }
 
   function turn(state, playerIndex){
@@ -187,7 +193,10 @@ function App() {
     if(state == "stand"){
       stand(playerIndex)
     } 
-
+   console.log(currPlayer)
+    if(currPlayer >= 3){
+      dealerRound()
+    }
   }
 //await timeout(1000); //for 1 sec delay
 
@@ -210,15 +219,21 @@ function App() {
                 if(inx == 0)
                 {
                   return(
-                <li key={inx}>{el}</li>)
+                <li key={inx}>
+                <img key={inx} src={require(`./image/cards/kier${cardsDir[el-2]}`) } width="32px" height="32px" alt={inx}></img>
+
+                </li>)
                 }
                 else if(inx == 1 && isDealerRound == false){
                   return( 
                     <li key={inx}>?</li>)
+                    
                 }
                 else{
                   return(
-                    <li key={inx}>{el}</li>)
+                    <img key={inx} src={require(`./image/cards/kier${cardsDir[el-2]}`) } width="32px" height="32px" alt={inx}></img>
+                    
+                    )
                 }
               })}
               </ul>
@@ -229,7 +244,6 @@ function App() {
                 playersVal={playersVal} 
                 playersUI={playersUI} 
                 turn={turn} 
-                restart={restart} 
                 playerIndex={1}
                 currPlayer={currPlayer}
                 />
@@ -237,7 +251,6 @@ function App() {
                 playersVal={playersVal} 
                 playersUI={playersUI} 
                 turn={turn} 
-                restart={restart} 
                 playerIndex={2}
                 currPlayer={currPlayer}
                 />
@@ -245,7 +258,6 @@ function App() {
                 playersVal={playersVal} 
                 playersUI={playersUI} 
                 turn={turn} 
-                restart={restart} 
                 playerIndex={3}
                 currPlayer={currPlayer}
                 />
