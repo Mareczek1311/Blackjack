@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 const cardsDir = ["/kier2.png","/kier3.png","/kier4.png","/kier5.png","/kier6.png","/kier7.png","/kier8.png","/kier9.png","/kier10.png"
 ,"/kierAS.png","/kierK.png","/kierQ.png","/kier2.png"]
 
-const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer }) => {
+const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myIndex }) => {
     return (
         <div className="playerUI">
                   <h1>Player {playerIndex}:</h1>
@@ -19,14 +19,19 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer }) => {
                         <div className='playButtons'>
                           { currPlayer == playerIndex ?
                             <>
-                            <div className="container">
-                              <div onClick={ () => turn("stand", playerIndex) } className='pixel' as="a" variant="primary">
-                                <p>Stand</p>
+                            {
+                              myIndex == currPlayer ?
+                              <div className="container">
+                                <div onClick={ () => turn("stand", playerIndex) } className='pixel' as="a" variant="primary">
+                                  <p>Stand</p>
+                                </div>
+                                <div onClick={ () => turn("hit", playerIndex) } className='pixel' as="a" variant="primary">
+                                  <p>Hit</p>
+                                </div>
                               </div>
-                              <div onClick={ () => turn("hit", playerIndex) } className='pixel' as="a" variant="primary">
-                                <p>Hit</p>
-                              </div>
-                            </div>
+                              :
+                              <p>Waiting...</p>
+                            }
                             </>
                             :
                             <></>

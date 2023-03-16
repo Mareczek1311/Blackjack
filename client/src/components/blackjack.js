@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import PlayerUI from '../playerUI';
 
-function Blackjack( { numOfPlayers, startGame, parentStarted } ){
+function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPlayersVal } ){
 
     
     function timeout(delay) {
@@ -28,10 +28,15 @@ function Blackjack( { numOfPlayers, startGame, parentStarted } ){
   
       useEffect(()=>{
         if(parentStarted == true){
-          start()
+          setStarted(false);
         }
       },[parentStarted])
+
+      useEffect(()=>{
+        setPlayersVal(parentPlayersVal)
+      },[parentPlayersVal])
       
+
   
       function restart(){
         setIsDealerRound(false)
@@ -53,55 +58,8 @@ function Blackjack( { numOfPlayers, startGame, parentStarted } ){
         setStarted(true)
       }
   
-         
-      function getRandomCard(){
-        let card = Math.floor(Math.random() * 10);
-        while(cards[card] === 0)
-        {
-          card = Math.floor(Math.random() * 10);
-        }
-        
-        
-        const newArray = cards.map((item, i) => {
-          return item;
-        
-      });
-        newArray[card]-=1;
-        
-        setCards(newArray)
-        card += 2; 
-        return card
-      }
-  
-  
-    function takeCard(index){
-      var card = getRandomCard()
-      
-      const newArray = playersVal.map((item, i) => {
-          return item;
-        
-      });
-  
-      newArray[index].push(card)
-      setPlayersVal(newArray)
-    }
-    
-    function dealCard(){
-      for(let i=0; i<playersVal.length; i++){
-        takeCard(i)
-      }
-  
-    }
-  
-    function start(){
-      dealCard()
-      dealCard()
-      setStarted(false);
-    
-    }
-    
     function hit(playerIndex){
-      takeCard(playerIndex)
+      //takeCard(playerIndex)
   
       let playerSum = sum(playersVal[playerIndex])
       let plUI = playersUI
@@ -123,7 +81,7 @@ function Blackjack( { numOfPlayers, startGame, parentStarted } ){
       
       setIsDealerRound(true)
         if(dealerSum <= 16){
-          takeCard(0)
+          //takeCard(0)
         }
         dealerSum = sum(playersVal[0])
   
@@ -260,6 +218,7 @@ function Blackjack( { numOfPlayers, startGame, parentStarted } ){
                 turn={turn} 
                 playerIndex={1}
                 currPlayer={currPlayer}
+                myIndex={myIndex}
                 />
                 <PlayerUI 
                 playersVal={playersVal} 
@@ -267,6 +226,7 @@ function Blackjack( { numOfPlayers, startGame, parentStarted } ){
                 turn={turn} 
                 playerIndex={2}
                 currPlayer={currPlayer}
+                myIndex={myIndex}
                 />
                 <PlayerUI 
                 playersVal={playersVal} 
@@ -274,6 +234,7 @@ function Blackjack( { numOfPlayers, startGame, parentStarted } ){
                 turn={turn} 
                 playerIndex={3}
                 currPlayer={currPlayer}
+                myIndex={myIndex}
                 />
               </div>
               <div onClick={ () => restart() } className='pixel' as="a" variant="primary">

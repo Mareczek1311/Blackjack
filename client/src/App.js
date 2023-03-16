@@ -15,6 +15,8 @@ function App() {
   const [connected, setConnected] = useState(false)
   const [numOfPlayers, setNumOfPlayers] = useState(0);
   const [parentStarted, setParentStarted] = useState(false)
+  const [parentPlayersVal, setParentPlayersVal] = useState([[],[],[],[]])
+  const [myIndex, setMyIndex] = useState(-1)
 
   useEffect(() => {
     function onConnect() {
@@ -26,10 +28,17 @@ function App() {
     }
 
 
+    socket.on('syncCards', (playersVal) => {
+      setParentPlayersVal(playersVal)
+    })
+
+    socket.on('createIndex', (index) => 
+    {
+      setMyIndex(index+1)
+    });
 
     socket.on('connection', (players) => {
       setNumOfPlayers(players)
-      console.log(players)
     })
     socket.on('connect', onConnect);
     socket.on('startGame', () => {
@@ -47,6 +56,7 @@ function App() {
     socket.emit("startGame")
   }
 
+  
 //await timeout(1000); //for 1 sec delay
 
   return (
@@ -59,6 +69,8 @@ function App() {
               numOfPlayers={numOfPlayers}
               startGame={startGame}
               parentStarted={parentStarted}
+              myIndex={myIndex}
+              parentPlayersVal={parentPlayersVal}
              />
             :
             <>
