@@ -30,8 +30,6 @@ img {
 
 .playerUI
 {
-
-  
   margin: 3%;
   width: 40vh;
   height: 30vh;
@@ -46,7 +44,7 @@ img {
   
 }
 .playerCardsList li{
-  
+  margin-left: -60px;
   display: inline;
 
 }
