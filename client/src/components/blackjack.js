@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import PlayerUI from '../playerUI';
 
-function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPlayersVal } ){
+function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPlayersVal, parentCurrPlayer, parentPlayersUI, parentIsDealerRound, parentTurn } ){
 
     
     function timeout(delay) {
@@ -22,8 +22,12 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
       const [playersUI, setPlayersUI] = useState(["inGame", "inGame", "inGame", "inGame"]);
       const [isDealerRound, setIsDealerRound] = useState(false);
   
+      
+      //now its useless bc i use cards on server and i keep them only bc fun restart use it
       const [cards, setCards]= useState([4,4,4,4,4,4,4,4,7,4])
       const setOfCards = [4,4,4,4,4,4,4,4,7,4]
+
+
       const [started, setStarted] = useState(true)
   
       useEffect(()=>{
@@ -36,6 +40,18 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
         setPlayersVal(parentPlayersVal)
       },[parentPlayersVal])
       
+
+      useEffect(()=>{
+        setCurrPlayer(parentCurrPlayer);
+      },[parentCurrPlayer])
+      
+      useEffect(()=>{
+        setPlayersUI(parentPlayersUI)
+      },[parentPlayersUI])
+      
+      useEffect(()=>{
+        setIsDealerRound(parentIsDealerRound)
+      },[parentIsDealerRound])
 
   
       function restart(){
@@ -57,107 +73,15 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
   
         setStarted(true)
       }
-  
-    function hit(playerIndex){
-      //takeCard(playerIndex)
-  
-      let playerSum = sum(playersVal[playerIndex])
-      let plUI = playersUI
-  
-      setPlayersUI(plUI)
-    }
+
     
-    function sum(array){
-      var res = 0
-      for(let i=0; i<array.length; i++){
-        res += array[i]
-      }
-      return res
-    }
+
   
-    function dealerRound(){
-      let plUI = playersUI
-      let dealerSum = sum(playersVal[0])
-      
-      setIsDealerRound(true)
-        if(dealerSum <= 16){
-          //takeCard(0)
-        }
-        dealerSum = sum(playersVal[0])
+
+
   
-        for(let i=1; i<playersUI.length; i++)
-        {
-          let playerSum =  sum(playersVal[i])
-          if(plUI[i]== "Win"){
-            continue;
-          }
+
   
-          if(dealerSum > 21 && playersUI[i] == "inGame"){
-            plUI[i] = "Win"
-          }
-          else if(playerSum > dealerSum && playerSum <= 21){
-            plUI[i] = "Win"
-          }
-          else if(playerSum == dealerSum){
-            plUI[i] = "lose"
-          }
-          else{
-            plUI[i] = "lose"
-          }
-        }
-    }
-  
-    function stand(playerIndex){
-      setCurrPlayer(currPlayer+1)
-      
-      //im now hard code and assume that there are always 4 players so i continue only if everyone stand or win
-      let playerSum = sum(playersVal[playerIndex])
-      let plUI = playersUI
-  
-      if(playerSum == 21){
-        plUI[playerIndex] = "Win"
-      }
-  
-      setPlayersUI(plUI)
-  
-    }
-  
-    function move(index){
-      let cardSum = sum(playersVal[index])
-      let plUI = playersUI
-  
-      if(cardSum == 21){
-        plUI[index] = "Win"
-        setCurrPlayer(currPlayer+1)
-      }
-      else if(cardSum > 21){
-        plUI[index] = "lose"
-        setCurrPlayer(currPlayer+1)
-      }
-      else{
-        plUI[index] = "inGame"
-        
-      }
-  
-      setPlayersUI(plUI)
-   
-    }
-  
-    function turn(state, playerIndex){
-      if(state == "hit"){
-        hit(playerIndex)
-        move(playerIndex)
-  
-      }
-  
-      if(state == "stand"){
-        stand(playerIndex)
-      } 
-     console.log(currPlayer)
-      if(currPlayer >= 3){
-        dealerRound()
-      }
-    }
 
     return(
         <header className="App-header">
@@ -215,15 +139,16 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
                 <PlayerUI 
                 playersVal={playersVal} 
                 playersUI={playersUI} 
-                turn={turn} 
+                turn={parentTurn} 
                 playerIndex={1}
                 currPlayer={currPlayer}
                 myIndex={myIndex}
+                
                 />
                 <PlayerUI 
                 playersVal={playersVal} 
                 playersUI={playersUI} 
-                turn={turn} 
+                turn={parentTurn} 
                 playerIndex={2}
                 currPlayer={currPlayer}
                 myIndex={myIndex}
@@ -231,7 +156,7 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
                 <PlayerUI 
                 playersVal={playersVal} 
                 playersUI={playersUI} 
-                turn={turn} 
+                turn={parentTurn} 
                 playerIndex={3}
                 currPlayer={currPlayer}
                 myIndex={myIndex}

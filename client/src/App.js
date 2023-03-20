@@ -17,6 +17,9 @@ function App() {
   const [parentStarted, setParentStarted] = useState(false)
   const [parentPlayersVal, setParentPlayersVal] = useState([[],[],[],[]])
   const [myIndex, setMyIndex] = useState(-1)
+  const [parentCurrPlayer, setParentCurrPlayer] = useState(1);
+  const [parentIsDealerRound, setParentIsDealerRound] = useState(false);
+  const [parentPlayersUI, setParentPlayersUI] = useState(["inGame", "inGame", "inGame", "inGame"]);
 
   useEffect(() => {
     function onConnect() {
@@ -30,6 +33,14 @@ function App() {
 
     socket.on('syncCards', (playersVal) => {
       setParentPlayersVal(playersVal)
+    })
+
+    socket.on('receiveInfo', (props) => {
+      setParentPlayersVal(props.playersVal)
+      setParentCurrPlayer(props.currPlayer)
+      setParentIsDealerRound(props.isDealerRound)
+      setParentPlayersUI(props.playersUI)
+
     })
 
     socket.on('createIndex', (index) => 
@@ -56,6 +67,12 @@ function App() {
     socket.emit("startGame")
   }
 
+
+    //only using state bc i too lazy to change params in child component
+  function turn(state, playerIndex){
+    socket.emit("turn", state)
+  }
+
   
 //await timeout(1000); //for 1 sec delay
 
@@ -71,6 +88,10 @@ function App() {
               parentStarted={parentStarted}
               myIndex={myIndex}
               parentPlayersVal={parentPlayersVal}
+              parentIsDealerRound={parentIsDealerRound}
+              parentPlayersUI={parentPlayersUI}
+              parentCurrPlayer={parentCurrPlayer}
+              parentTurn={turn}
              />
             :
             <>

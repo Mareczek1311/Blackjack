@@ -9,7 +9,7 @@ const io = new Server({
   }
 })
 
-// now what I need to do is transfer rest of the functions from client to server 
+// besides of restart function everything is now server side, only thing i need to do is fix lots of bugs....
 
 var players = 0
 
@@ -17,7 +17,7 @@ var playersVal = [[],[],[],[]]
 var playersUI = ["inGame", "inGame", "inGame", "inGame"]
 var isDealerRound = false
 var cards = [4,4,4,4,4,4,4,4,7,4]
-
+var currPlayer = 1
 
 function start(){
   dealCard()
@@ -44,6 +44,29 @@ function getRandomCard(){
   return card
 }
 
+function sum(array){
+  var res = 0
+  for(let i=0; i<array.length; i++){
+    res += array[i]
+  }
+  return res
+}
+
+function stand(playerIndex){
+  currPlayer = currPlayer + 1
+  
+  //im now hard code and assume that there are always 4 players so i continue only if everyone stand or win
+  let playerSum = sum(playersVal[playerIndex])
+  let plUI = playersUI
+
+  if(playerSum == 21){
+    plUI[playerIndex] = "Win"
+  }
+
+  playersUI = plUI
+
+}
+
 function dealCard(){
   for(let i=0; i<playersVal.length; i++){
     takeCard(i)
@@ -64,7 +87,86 @@ function takeCard(index){
   playersVal = newArray
 }
 
+function dealerRound(){
+  let plUI = playersUI
+  let dealerSum = sum(playersVal[0])
+  
+    isDealerRound = true;
+    if(dealerSum <= 16){
+      takeCard(0)
+    }
+    dealerSum = sum(playersVal[0])
 
+    for(let i=1; i<playersUI.length; i++)
+    {
+      let playerSum =  sum(playersVal[i])
+      if(plUI[i]== "Win"){
+        continue;
+      }
+
+      if(dealerSum > 21 && playersUI[i] == "inGame"){
+        plUI[i] = "Win"
+      }
+      else if(playerSum > dealerSum && playerSum <= 21){
+        plUI[i] = "Win"
+      }
+      else if(playerSum == dealerSum){
+        plUI[i] = "lose"
+      }
+      else{
+        plUI[i] = "lose"
+      }
+    }
+}
+
+function turn(state, playerIndex){
+  if(state == "hit"){
+    hit(playerIndex)
+    move(playerIndex)
+
+  }
+
+  if(state == "stand"){
+    stand(playerIndex)
+  } 
+ console.log(currPlayer)
+  if(currPlayer >= 3){
+    dealerRound()
+  }
+}
+
+
+function move(index){
+  let cardSum = sum(playersVal[index])
+  let plUI = playersUI
+
+  if(cardSum == 21){
+    plUI[index] = "Win"
+    currPlayer += 1
+  }
+  else if(cardSum > 21){
+    plUI[index] = "lose"
+    currPlayer+=1
+  }
+  else{
+    plUI[index] = "inGame"
+    
+  }
+
+  playersUI = plUI
+
+}
+
+
+  
+function hit(playerIndex){
+  takeCard(playerIndex)
+
+  let playerSum = sum(playersVal[playerIndex])
+  let plUI = playersUI
+
+  playersUI = plUI
+}
 
 io.listen(4000);
 app.get('/', (req, res) => {
@@ -74,6 +176,12 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   io.to(socket.id).emit("createIndex", players);
   
+
+  socket.on('turn', (state)=>{
+    turn(state, currPlayer);
+    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound})
+  })
+
   socket.on('startGame', function() { 
     io.emit("startGame");
     console.log("game is started");
