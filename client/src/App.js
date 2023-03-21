@@ -35,7 +35,7 @@ function App() {
       setParentPlayersVal(playersVal)
     })
 
-    socket.on('receiveInfo', (props) => {
+    socket.on('receiveData', (props) => {
       setParentPlayersVal(props.playersVal)
       setParentCurrPlayer(props.currPlayer)
       setParentIsDealerRound(props.isDealerRound)

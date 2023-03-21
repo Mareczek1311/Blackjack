@@ -3,13 +3,12 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
+
 const io = new Server({
   cors: {
     origin: "*"
   }
 })
-
-// besides of restart function everything is now server side, only thing i need to do is fix lots of bugs....
 
 var players = 0
 
@@ -18,6 +17,17 @@ var playersUI = ["inGame", "inGame", "inGame", "inGame"]
 var isDealerRound = false
 var cards = [4,4,4,4,4,4,4,4,7,4]
 var currPlayer = 1
+
+const restartGame = async () => {
+    playersVal = [[],[],[],[]]
+    isDealerRound = false
+    cards = [4,4,4,4,4,4,4,4,7,4]
+    currPlayer = 1
+    playersUI = ["inGame", "inGame", "inGame", "inGame"]
+  
+  
+    start();
+};
 
 function start(){
   dealCard()
@@ -73,7 +83,6 @@ function dealCard(){
   }
 
 }
-
   
 function takeCard(index){
   var card = getRandomCard()
@@ -129,12 +138,10 @@ function turn(state, playerIndex){
   if(state == "stand"){
     stand(playerIndex)
   } 
- console.log(currPlayer)
-  if(currPlayer >= 3){
+  if(currPlayer >= players+1){
     dealerRound()
   }
 }
-
 
 function move(index){
   let cardSum = sum(playersVal[index])
@@ -157,15 +164,17 @@ function move(index){
 
 }
 
-
-  
 function hit(playerIndex){
   takeCard(playerIndex)
-
-  let playerSum = sum(playersVal[playerIndex])
   let plUI = playersUI
-
   playersUI = plUI
+}
+
+function controlFunction(){
+  console.log(playersVal)
+  console.log(playersUI)
+  console.log(currPlayer)
+
 }
 
 io.listen(4000);
@@ -174,12 +183,24 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
+  console.log("Current players count: ", players)
+
   io.to(socket.id).emit("createIndex", players);
   
 
   socket.on('turn', (state)=>{
     turn(state, currPlayer);
+    controlFunction();
     io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound})
+    if(isDealerRound==true)
+    {
+      console.log("restarting...")
+      restartGame()
+      setInterval(() => {
+      io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound})
+      }, 5000)
+    }
+
   })
 
   socket.on('startGame', function() { 
@@ -193,20 +214,15 @@ io.on('connection', (socket) => {
     console.log("user disconnected")
     players -= 1;
     socket.broadcast.emit("connection", players);
-    console.log(players)
+    console.log("Current players count: ", players)
 
   })
   players += 1;
   io.emit("connection", players);
-
   console.log('a user connected');
-
   socket.on('chat message', (msg) => {
     console.log('message: ' + msg);
   });
-  
-
-  
 });
 
 server.listen(3000, () => {
