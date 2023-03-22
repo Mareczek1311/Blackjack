@@ -17,6 +17,10 @@ var playersUI = ["inGame", "inGame", "inGame", "inGame"]
 var isDealerRound = false
 var cards = [4,4,4,4,4,4,4,4,7,4]
 var currPlayer = 1
+var playersBalance = [0,1000, 1000, 1000]
+var playersBet = [0, 0, 0, 0]
+var betingTurn = true
+var currBetPlayer = 1
 
 const restartGame = async () => {
     playersVal = [[],[],[],[]]
@@ -24,14 +28,15 @@ const restartGame = async () => {
     cards = [4,4,4,4,4,4,4,4,7,4]
     currPlayer = 1
     playersUI = ["inGame", "inGame", "inGame", "inGame"]
-  
+    playersBet = [0,0,0,0]
+    betingTurn = true
+    currBetPlayer = 1
   
     start();
 };
 
 function start(){
-  dealCard()
-  dealCard()
+
 
 }
 
@@ -171,10 +176,23 @@ function hit(playerIndex){
 }
 
 function controlFunction(){
+  console.log("=============")
   console.log(playersVal)
   console.log(playersUI)
   console.log(currPlayer)
+  console.log(currBetPlayer)
+  console.log("=============")
+}
 
+function bet(value){
+  playersBet[currBetPlayer] = value
+  playersBalance[currBetPlayer] -= value
+  currBetPlayer += 1
+  if(currBetPlayer >= players+1){
+    betingTurn = false
+    dealCard()
+    dealCard()
+  }
 }
 
 io.listen(4000);
@@ -187,17 +205,25 @@ io.on('connection', (socket) => {
 
   io.to(socket.id).emit("createIndex", players);
   
+  socket.on('bet', (value)=>{
+    bet(value)
+    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance})
+    controlFunction();
+
+  })
 
   socket.on('turn', (state)=>{
     turn(state, currPlayer);
     controlFunction();
-    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound})
+    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance})
+    
     if(isDealerRound==true)
     {
       console.log("restarting...")
       restartGame()
       setInterval(() => {
-      io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound})
+        io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance})
+        
       }, 5000)
     }
 

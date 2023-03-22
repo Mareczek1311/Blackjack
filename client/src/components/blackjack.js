@@ -3,14 +3,13 @@ import Button from 'react-bootstrap/Button';
 import { useEffect, useState } from 'react';
 import PlayerUI from '../playerUI';
 
-function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPlayersVal, parentCurrPlayer, parentPlayersUI, parentIsDealerRound, parentTurn } ){
+function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPlayersVal, parentCurrPlayer, parentPlayersUI, parentIsDealerRound, parentTurn, betingTurn, currBetPlayer, bet, playersBet, playersBalance } ){
 
   const cardsDir = ["/kier2.png","/kier3.png","/kier4.png","/kier5.png","/kier6.png","/kier7.png","/kier8.png","/kier9.png","/kier10.png"
   ,"/kierAS.png","/kierK.png","/kierQ.png","/kier2.png"]
   
       //1 becouse 0 is a dealer
       const [currPlayer, setCurrPlayer] = useState(1);
-      const [playersBalance, setPlayerBalance] = useState(1000)
       const [playersVal, setPlayersVal] = useState([[],[],[],[]]);
       const [playersUI, setPlayersUI] = useState(["inGame", "inGame", "inGame", "inGame"]);
       const [isDealerRound, setIsDealerRound] = useState(false);
@@ -66,6 +65,10 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
                     </>
                 }
             </> :
+
+                      
+            
+
             <>
               <h1>Dealer: </h1>
               <ul className="playerCardsList">
@@ -102,6 +105,11 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
                     playerIndex={i+1}
                     currPlayer={currPlayer}
                     myIndex={myIndex}
+                    betingTurn={betingTurn}
+                    currBetPlayer= {currBetPlayer}
+                    playersBet={playersBet}
+                    playersBalance={playersBalance}
+                    bet={bet}
                     />)})
                 }
               </div>

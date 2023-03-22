@@ -20,6 +20,10 @@ function App() {
   const [parentCurrPlayer, setParentCurrPlayer] = useState(1);
   const [parentIsDealerRound, setParentIsDealerRound] = useState(false);
   const [parentPlayersUI, setParentPlayersUI] = useState(["inGame", "inGame", "inGame", "inGame"]);
+  const [betingTurn, setBetingTurn] = useState(true)
+  const [currBetPlayer, setCurrBetPlayer] = useState(1)
+  const [playersBet, setPlayersBet] = useState([0,0,0,0])
+  const [playersBalance, setPlayersBalance] = useState([0,0,0,0]);
 
   useEffect(() => {
     function onConnect() {
@@ -40,6 +44,10 @@ function App() {
       setParentCurrPlayer(props.currPlayer)
       setParentIsDealerRound(props.isDealerRound)
       setParentPlayersUI(props.playersUI)
+      setBetingTurn(props.betingTurn)
+      setCurrBetPlayer(props.currBetPlayer)
+      setPlayersBet(props.playersBet)
+      setPlayersBalance(props.playersBalance)
 
     })
 
@@ -67,6 +75,9 @@ function App() {
     socket.emit("startGame")
   }
 
+  function bet(value, index){
+    socket.emit("bet", value )
+  }
 
     //only using state bc i too lazy to change params in child component
   function turn(state, playerIndex){
@@ -82,7 +93,6 @@ function App() {
         { 
           connected ?
             <Blackjack
-            
               numOfPlayers={numOfPlayers}
               startGame={startGame}
               parentStarted={parentStarted}
@@ -92,6 +102,11 @@ function App() {
               parentPlayersUI={parentPlayersUI}
               parentCurrPlayer={parentCurrPlayer}
               parentTurn={turn}
+              bet={bet}
+              betingTurn={betingTurn}
+              currBetPlayer={currBetPlayer}
+              playersBet={playersBet}
+              playersBalance={playersBalance}
              />
             :
             <>
