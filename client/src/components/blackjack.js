@@ -16,6 +16,10 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
       const [started, setStarted] = useState(true)
       const [playerCount, setPlayerCount] = useState([1])
 
+      //code that later
+      const playersLoseCounter = [0, 0, 0, 0]
+      const playersWinCounter = [0, 0, 0, 0]
+
       useEffect(() => {
         let arr = playerCount.map((item, i) => {
           return item;

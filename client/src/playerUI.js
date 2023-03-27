@@ -8,7 +8,7 @@ const cardsDir = ["/kier2.png","/kier3.png","/kier4.png","/kier5.png","/kier6.pn
 const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myIndex, betingTurn, currBetPlayer, bet, playersBet, playersBalance }) => {
 
   useEffect(()=>{
-    console.log(playerIndex, currBetPlayer)
+    console.log(playerIndex, currBetPlayer, playersBalance, playersBet)
   },[currBetPlayer])
 
   function UI(){
@@ -21,6 +21,7 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
         <div className="playerUI">
                        
             <div className='playButtons'>
+              {
                     <div className="container">
                       <Button onClick={ () => bet(100) } className='playbtn' as="a" variant="primary">
                         100
@@ -29,23 +30,35 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
                         500
                       </Button> 
                     </div>
+              }
             </div>
             </div>
  
           </>
         )
       }
-      else{
+      else if(playerIndex == currBetPlayer){
         return(
         <div className="playerUI">
                           
           <div className='playButtons'>
             <div className="container">
-             <p>Waiting...</p>
+             <p>Waiting for player...</p>
             </div>
           </div>
           </div>
         )
+      }
+      else{
+        return(
+          <div className="playerUI">
+                            
+            <div className='playButtons'>
+              <div className="container">
+              </div>
+            </div>
+            </div>
+          )
       }
     }
     else{
@@ -75,7 +88,7 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
                       </div>
                     </div>
                     :
-                    <p>Waiting...</p>
+                    <p>Waiting for player...</p>
                   }
                   </>
                   :
@@ -96,10 +109,12 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
     }
   }
 
-    return (
+    return ( 
       <>
-      <p>my index: {playerIndex} {currBetPlayer}</p>
-
+      <div>
+        <p>Balance: {playersBalance[playerIndex]}</p>
+        <p>Bet: {playersBet[playerIndex]}</p>
+      </div>
       {UI()}
       </>
     )

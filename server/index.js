@@ -31,7 +31,10 @@ const restartGame = async () => {
     playersBet = [0,0,0,0]
     betingTurn = true
     currBetPlayer = 1
-  
+    if(players == 0)
+    {
+      playersBalance = [0, 1000 ,1000, 1000]
+    }
     start();
 };
 
@@ -129,6 +132,12 @@ function dealerRound(){
       }
       else{
         plUI[i] = "lose"
+      }
+    }
+
+    for(let i=1; i<playersUI.length; i++){
+      if(plUI[i] == "Win"){
+        playersBalance[i] += playersBet[i]*2
       }
     }
 }
@@ -233,7 +242,7 @@ io.on('connection', (socket) => {
     io.emit("startGame");
     console.log("game is started");
     start()
-    io.emit("syncCards", playersVal)
+    io.emit("syncCards", {playersVal, playersBalance})
   })
 
   socket.on('disconnect', function() { 
@@ -241,6 +250,10 @@ io.on('connection', (socket) => {
     players -= 1;
     socket.broadcast.emit("connection", players);
     console.log("Current players count: ", players)
+    if(players == 0){
+      console.log("Game restarted")
+      restartGame()
+    }
 
   })
   players += 1;
@@ -249,6 +262,8 @@ io.on('connection', (socket) => {
   socket.on('chat message', (msg) => {
     console.log('message: ' + msg);
   });
+
+ 
 });
 
 server.listen(3000, () => {

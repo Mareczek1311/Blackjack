@@ -35,8 +35,10 @@ function App() {
     }
 
 
-    socket.on('syncCards', (playersVal) => {
-      setParentPlayersVal(playersVal)
+    socket.on('syncCards', (props) => {
+      setParentPlayersVal(props.playersVal)
+      setPlayersBalance(props.playersBalance)
+
     })
 
     socket.on('receiveData', (props) => {
