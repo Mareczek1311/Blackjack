@@ -25,6 +25,10 @@ function App() {
   const [playersBet, setPlayersBet] = useState([0,0,0,0])
   const [playersBalance, setPlayersBalance] = useState([0,0,0,0]);
 
+  const [playersLoseCounter, setPlayersLoseCounter] = useState([0, 0, 0, 0])
+  const [playersWinCounter, setPlayersWinCounter] = useState([0, 0, 0, 0])
+  const [playersNickname, setPlayersNickname] = useState(["", "", "", ""])
+
   useEffect(() => {
     function onConnect() {
       setConnected(true);
@@ -50,16 +54,20 @@ function App() {
       setCurrBetPlayer(props.currBetPlayer)
       setPlayersBet(props.playersBet)
       setPlayersBalance(props.playersBalance)
+      setPlayersLoseCounter(props.playersLoseCounter)
+      setPlayersWinCounter(props.playersWinCounter)
 
     })
 
-    socket.on('createIndex', (index) => 
+    socket.on('createIndex', (props) => 
     {
-      setMyIndex(index+1)
+      setMyIndex(props.players+1)
+      setPlayersNickname(props.playersNickname)
     });
 
-    socket.on('connection', (players) => {
-      setNumOfPlayers(players)
+    socket.on('connection', (props) => {
+      setNumOfPlayers(props.players)
+      setPlayersNickname(props.playersNickname)
     })
     socket.on('connect', onConnect);
     socket.on('startGame', () => {
@@ -91,7 +99,6 @@ function App() {
 
   return (
     <div className="App">
-      <div className="mainContainer">  
         { 
           connected ?
             <Blackjack
@@ -109,18 +116,19 @@ function App() {
               currBetPlayer={currBetPlayer}
               playersBet={playersBet}
               playersBalance={playersBalance}
+              playersLoseCounter={playersLoseCounter}
+              playersWinCounter={playersWinCounter}
+              playersNickname={playersNickname}
              />
             :
             <>
             <MyForm
               setConnected={setConnected}
              />
-            <ConnectionState connected={ connected } />
             <ConnectionManager />
             </>
          
         }
-      </div>
     </div>
   );
 }

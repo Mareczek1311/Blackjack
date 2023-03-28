@@ -5,11 +5,22 @@ import { useEffect } from 'react';
 const cardsDir = ["/kier2.png","/kier3.png","/kier4.png","/kier5.png","/kier6.png","/kier7.png","/kier8.png","/kier9.png","/kier10.png"
 ,"/kierAS.png","/kierK.png","/kierQ.png","/kier2.png"]
 
-const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myIndex, betingTurn, currBetPlayer, bet, playersBet, playersBalance }) => {
-
-  useEffect(()=>{
-    console.log(playerIndex, currBetPlayer, playersBalance, playersBet)
-  },[currBetPlayer])
+const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myIndex, betingTurn, currBetPlayer, bet, playersBet, playersBalance, playersLoseCounter, playersWinCounter, playersNickname }) => {
+  function button(value){
+    if(playersBalance[myIndex] >= value){
+      return(
+        <div onClick={ () => bet(value) } className='pixel' as="a" variant="primary">
+        <p>{value}</p>
+        </div>
+      )
+    }
+    else{
+      //Definetly need to change this to diffrent style WHY NOT VISABLE!?
+      <div className='pixel' as="a" variant="primary">
+        <p>*{value}*</p>
+      </div>
+    }
+  }
 
   function UI(){
     if(betingTurn){
@@ -18,20 +29,14 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
         return(
           <>    
 
-        <div className="playerUI">
                        
             <div className='playButtons'>
               {
                     <div className="container">
-                      <Button onClick={ () => bet(100) } className='playbtn' as="a" variant="primary">
-                        100
-                      </Button>  
-                      <Button onClick={ () => bet(500) } className='playbtn' as="a" variant="primary">
-                        500
-                      </Button> 
+                      {button(100)}
+                      {button(500)}
                     </div>
               }
-            </div>
             </div>
  
           </>
@@ -39,31 +44,27 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
       }
       else if(playerIndex == currBetPlayer){
         return(
-        <div className="playerUI">
                           
           <div className='playButtons'>
             <div className="container">
              <p>Waiting for player...</p>
             </div>
           </div>
-          </div>
         )
       }
       else{
         return(
-          <div className="playerUI">
                             
             <div className='playButtons'>
               <div className="container">
               </div>
-            </div>
             </div>
           )
       }
     }
     else{
       return(
-        <div className="playerUI">
+        <div className="ugabugaContainer">
         <h1>Player {playerIndex}:</h1>
               <ul className="playerCardsList">
                 {playersVal[playerIndex].map((el, inx) => <li key={inx}>
@@ -74,7 +75,6 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
               </ul>
           {playersUI[playerIndex] == "inGame" ? 
           <>
-              <div className='playButtons'>
                 { currPlayer == playerIndex ?
                   <>
                   {
@@ -89,12 +89,12 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
                     </div>
                     :
                     <p>Waiting for player...</p>
+                    
                   }
                   </>
                   :
                   <></>
                 }
-            </div>
 
             </> 
             :
@@ -102,8 +102,6 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
             
             <p>Lose</p> </>: <p>Win</p>
           }
-
-
       </div> 
       )   
     }
@@ -111,11 +109,9 @@ const PlayerUI = ({ playersVal, playersUI, turn, playerIndex, currPlayer, myInde
 
     return ( 
       <>
-      <div>
-        <p>Balance: {playersBalance[playerIndex]}</p>
-        <p>Bet: {playersBet[playerIndex]}</p>
+      <div className="playerUI">
+        {UI()}
       </div>
-      {UI()}
       </>
     )
 }

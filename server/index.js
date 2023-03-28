@@ -21,6 +21,10 @@ var playersBalance = [0,1000, 1000, 1000]
 var playersBet = [0, 0, 0, 0]
 var betingTurn = true
 var currBetPlayer = 1
+var playersLoseCounter = [0, 0, 0, 0]
+var playersWinCounter = [0, 0, 0, 0]
+var playersNickname = ["", "", "", ""]
+
 
 const restartGame = async () => {
     playersVal = [[],[],[],[]]
@@ -139,6 +143,14 @@ function dealerRound(){
       if(plUI[i] == "Win"){
         playersBalance[i] += playersBet[i]*2
       }
+      if(playersBalance[i] >= 2000){
+        playersWinCounter[i] += 1
+        playersBalance[i] = 1000
+      }
+      if(playersBalance[i] <= 0){
+        playersLoseCounter[i] += 1
+        playersBalance[i] = 1000
+      }
     }
 }
 
@@ -190,6 +202,7 @@ function controlFunction(){
   console.log(playersUI)
   console.log(currPlayer)
   console.log(currBetPlayer)
+  console.log(playersNickname)
   console.log("=============")
 }
 
@@ -208,15 +221,20 @@ io.listen(4000);
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
-
+  
 io.on('connection', (socket) => {
+
+
+  socket.on('join', nickname => {
+    playersNickname[players] = nickname
+    })
   console.log("Current players count: ", players)
 
-  io.to(socket.id).emit("createIndex", players);
+  io.to(socket.id).emit("createIndex", {players, playersNickname});
   
   socket.on('bet', (value)=>{
     bet(value)
-    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance})
+    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance, playersLoseCounter, playersWinCounter})
     controlFunction();
 
   })
@@ -224,14 +242,14 @@ io.on('connection', (socket) => {
   socket.on('turn', (state)=>{
     turn(state, currPlayer);
     controlFunction();
-    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance})
+    io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance, playersLoseCounter, playersWinCounter})
     
     if(isDealerRound==true)
     {
       console.log("restarting...")
       restartGame()
       setInterval(() => {
-        io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance})
+        io.emit('receiveData', {playersUI, playersVal, currPlayer, isDealerRound, betingTurn, currBetPlayer, playersBet, playersBalance, playersLoseCounter, playersWinCounter})
         
       }, 5000)
     }
@@ -248,7 +266,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', function() { 
     console.log("user disconnected")
     players -= 1;
-    socket.broadcast.emit("connection", players);
+    socket.broadcast.emit("connection", {players, playersNickname});
     console.log("Current players count: ", players)
     if(players == 0){
       console.log("Game restarted")
@@ -256,8 +274,9 @@ io.on('connection', (socket) => {
     }
 
   })
+
   players += 1;
-  io.emit("connection", players);
+  io.emit("connection", {players, playersNickname});
   console.log('a user connected');
   socket.on('chat message', (msg) => {
     console.log('message: ' + msg);
