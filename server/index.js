@@ -1,14 +1,24 @@
-const express = require('express');
-const app = express();
 const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
+const socketio = require('socket.io');
+const cors = require('cors');
 
-const io = new Server({
-  cors: {
-    origin: "*"
-  }
-})
+const express = require("express");
+const router = express.Router();
+
+router.get("/", (req, res) => {
+  res.send({ response: "Server is up and running." }).status(200);
+});
+
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
+
+app.use(cors());
+app.use(router);
+
+const host = '0.0.0.0';
+const PORT = process.env.PORT || 5000;
+
 
 var players = 0
 
@@ -217,14 +227,7 @@ function bet(value){
   }
 }
 
-io.listen(4000);
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/index.html');
-});
-  
 io.on('connection', (socket) => {
-
-
   socket.on('join', nickname => {
     playersNickname[players] = nickname
     })
@@ -285,6 +288,5 @@ io.on('connection', (socket) => {
  
 });
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
-});
+server.listen(PORT,host, () => {
+  console.log(`Server has started.`)});

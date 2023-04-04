@@ -54,17 +54,20 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
             <>
                 {   numOfPlayers != 0 ?
                     <>
-                        <Button onClick={ () => startGame() } className='playbtn' as="a" variant="primary">
-                            Start
-                        </Button>                   
+                       
+                      <div onClick={ () => startGame() } className='pixel' as="a" variant="primary">
+                        <p>Start</p>
+                      </div>               
                     </>
                     :
                     <>
-                        <Button className='playbtn' as="a" variant="secondary">
-                            Start
-                        </Button>
+                    <div className='pixel' as="a" variant="primary">
+                        <p>Start</p>
+                      </div>  
                     </>
                 }
+
+                <h1>Players: {numOfPlayers}</h1>
             </> :
 
                       
@@ -131,6 +134,7 @@ function Blackjack( { numOfPlayers, startGame, parentStarted, myIndex, parentPla
                             <p>Bet: {playersBet[i+1]}</p>
                             <p>Wins: {playersWinCounter[i+1]}</p>
                             <p>Loses: {playersLoseCounter[i+1]}</p>
+
                           </div>
                    </div>
                     </div>
