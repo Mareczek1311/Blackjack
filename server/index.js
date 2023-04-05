@@ -1,7 +1,6 @@
 const http = require('http');
-const socketio = require('socket.io');
 const cors = require('cors');
-
+const { Server } = require("socket.io");
 const express = require("express");
 const router = express.Router();
 
@@ -11,10 +10,15 @@ router.get("/", (req, res) => {
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+const io = new Server(server, {
+  cors: {
+    origin: "https://blackjackproject.herokuapp.com", 
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+  }
+});
 
-app.use(cors());
-app.use(router);
 
 const host = '0.0.0.0';
 const PORT = process.env.PORT || 5000;
